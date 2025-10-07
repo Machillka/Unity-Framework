@@ -1,0 +1,12 @@
+{
+    "profileId": "machillka.movement.1",
+    "version": "0.1.0",
+    "description": "Fu!",
+    "preview": {
+        "instanceID": 856
+    },
+    "maxSpeed": 6.0,
+    "acceleration": 30.0,
+    "deceleration": 40.0,
+    "usePhysics": true
+}
