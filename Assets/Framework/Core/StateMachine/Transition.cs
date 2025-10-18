@@ -1,9 +1,4 @@
-namespace Framework.Core.StateMachine
+namespace Framework.Core.FSM
 {
-    public class Transition
-    {
-        public string From;
-        public string To;
-        public string Trigger;
-    }
+    
 }

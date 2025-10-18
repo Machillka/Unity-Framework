@@ -1,61 +1,91 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System;
 
-namespace Framework.Core.StateMachine
+namespace Framework.Core.FSM
 {
-    public class StateMachine : IStateMachine
+    public class StateMachine
     {
-        private readonly Dictionary<string, IState> _states = new();
-        private readonly List<Transition> _transitions = new();
-        private readonly Queue<string> _triggerQueue = new();
-        public StateContext Context { get; } = new();
+        // id -> edge
+        private Dictionary<string, List<Transition>> _transitions;
+        // id -> state
+        private Dictionary<string, IState> _states;
         private IState _current;
+        public object BlackBoard { get; }
 
-        public void AddState(IState state) => _states[state.Id] = state;
-
-        public void AddTransition(Transition t) => _transitions.Add(t);
-
-        public void Trigger(string trigger) => _triggerQueue.Enqueue(trigger);
-
-        public void Dispose()
+        public void Start(IState initState)
         {
-            throw new System.NotImplementedException();
+            _current = initState;
+            _current.OnEnter();
         }
 
-        public async Task Initialize(string startId)
+        public void AddTransition(string fromId, ITransitionCondition cond, string toId)
         {
-            _current = _states[startId];
-            await _current.OnEnter(Context);
-        }
-
-        public async Task Tick(float deltaTime)
-        {
-            Context.Data["deltaTime"] = deltaTime;
-
-            while (_triggerQueue.Count > 0)
+            if (!_transitions.TryGetValue(fromId, out var conditionList))
             {
-                var tri = _triggerQueue.Dequeue();
-                var match = _transitions.Find(t => t.From == _current.Id && t.Trigger == tri);
-                if (match != null)
+                // 不存在时先创建
+                conditionList = new();
+                _transitions[fromId] = conditionList;
+            }
+            conditionList.Add(new Transition(_states[toId], cond));
+        }
+
+        public void AddTransition(IState fromState, ITransitionCondition cond, IState toState)
+        {
+            if (!_transitions.TryGetValue(fromState.Id, out var conditionList))
+            {
+                // 不存在时先创建
+                conditionList = new();
+                _transitions[fromState.Id] = conditionList;
+            }
+            conditionList.Add(new Transition(_states[toState.Id], cond));
+        }
+
+        public void AddState(IState state)
+        {
+            string id = state.Id;
+            if (_states.ContainsKey(id))
+            {
+                throw new Exception("Contains id");
+            }
+
+            _states[id] = state;
+        }
+
+        public void OnExcute()
+        {
+            if (_current == null)
+                return;
+            _current.OnExcute();
+            if (_transitions.TryGetValue(_current.Id, out var conditionList))
+            {
+                foreach (var c in conditionList)
                 {
-                    await TransitionTo(match.To);
-                    return;
+                    if (c.Condition.Evaluate())
+                    {
+                        ChangeState(c.To);
+                        break;
+                    }
                 }
             }
-
-            var implMatch = _transitions.Find(t => t.From == _current.Id && string.IsNullOrEmpty(t.Trigger));
-            if (implMatch != null)
-            {
-                await TransitionTo(implMatch.To);
-                return;
-            }
-            await _current.OnUpdate(Context);
         }
-        public async Task TransitionTo(string toId)
+
+        public void ChangeState(IState to)
         {
-            await _current.OnExit(Context);
-            _current = _states[toId];
-            await _current.OnEnter(Context);
+            _current.OnExit();
+            _current = to;
+            _current.OnEnter();
+        }
+
+        public class Transition
+        {
+            public Transition(IState to, ITransitionCondition condition)
+            {
+                To = to;
+                Condition = condition;
+            }
+
+            public IState To;
+            public ITransitionCondition Condition;
         }
     }
 }

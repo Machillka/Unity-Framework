@@ -1,22 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Framework.Core.StateMachine
+namespace Framework.Core.FSM
 {
     public interface IState
     {
-        string Id { get; set; }
-        Task OnEnter(StateContext ctx);
-        Task OnExit(StateContext ctx);
-        Task OnUpdate(StateContext ctx);
+        string Id { get; }
+        public void OnEnter();
+        public void OnExcute();
+        public void OnExit();
     }
-
-    public class StateContext
-    {
-        public object Host;
-        public Dictionary<string, object> Data = new();
-    }
-
-
 }
