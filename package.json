@@ -1,0 +1,35 @@
+{
+    "name": "com.machillka.framework",
+    "displayName": "Chill Framework",
+    "version": "1.0.0",
+    "unity": "2023.1",
+    "description": "A framework for helping build your games in a simple way.",
+    "keywords": [
+        "machillka",
+        "framework",
+        "control",
+        "unity",
+        "toolkit"
+    ],
+    "author": {
+        "name": "Machillka",
+        "email": "machillka2007@gmail.com",
+        "url": "https://github.com/machillka/Unity-Framework"
+    },
+    "license": "MIT",
+    "samples": [
+        {
+            "displayName": "Example Scenes",
+            "description": "Minimal demos and example scenes showing framework usage",
+            "path": "Samples~/Examples"
+        }
+    ],
+    "dependencies": {},
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/machillka/Unity-Framework.git",
+        "revision": ""
+    },
+    "unityReleaseNotes": "",
+    "documentationUrl": "https://github.com/machillka/Unity-Framework"
+}
