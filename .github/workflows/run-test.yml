@@ -2,7 +2,7 @@ name: Unity Test
 
 on:
   push:
-    branches: [package main]
+    branches: [package, main]
   pull_request:
     branches: [main]
   workflow_call:
