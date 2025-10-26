@@ -1,49 +1,23 @@
-name: Package Release
-
+name: Sync Package Branch
 on:
   push:
-    tags:
-      - "v*.*.*"
-
-permissions:
-  contents: write
-
-env:
-  SUBTREE_PATH: "Assets/Framework"
-  PACKAGE_NAME: "com.machillka.framework"
-  EXPORT_NAME: "machillka-framework.unitypackage"
+    branches: [main]
 
 jobs:
-  run-tests:
-    uses: ./.github/workflows/run-test.yml
-
-  build-and-release:
+  sync-package:
     runs-on: ubuntu-latest
-    env:
-      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      - name: Export .unitypackage
+      - name: Configure Git
         run: |
-          mkdir -p build
-          # export the prepared package folder into a .unitypackage
-          /opt/unity/Editor/Unity -batchmode -nographics -projectPath "${{ github.workspace }}" \
-            -exportPackage "Packages/${PACKAGE_NAME}" "build/${EXPORT_NAME}" -quit
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: unitypackage
-          path: build/${EXPORT_NAME}
-
-      - name: Create GitHub Release and upload asset
-        id: release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: build/${EXPORT_NAME}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Update Package Branch
+        run: |
+          git subtree split --prefix=Assets/Framework -b temp-split
+          git push origin temp-split:package --force
+          git branch -D temp-split
