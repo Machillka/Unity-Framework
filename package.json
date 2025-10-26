@@ -1,7 +1,7 @@
 {
     "name": "com.machillka.framework",
     "displayName": "Chill Framework",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "unity": "2023.1",
     "description": "A framework for helping build your games in a simple way.",
     "keywords": [
