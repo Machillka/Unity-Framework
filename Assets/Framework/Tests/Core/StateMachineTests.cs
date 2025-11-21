@@ -2,7 +2,7 @@ using UnityEngine;
 using Framework.Core.FSM;
 using NUnit.Framework;
 
-namespace Tests
+namespace Tests.Core.StateMachineTests
 {
     public class TimerGuard : IGuard
     {

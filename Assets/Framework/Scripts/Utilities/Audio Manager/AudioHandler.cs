@@ -8,6 +8,7 @@ namespace Framework.Utilities.AudioManager
         AudioSource _src;
         Action<AudioSource> _release;
 
+        public event Action<AudioHandle> OnFinished;
         internal AudioHandle(AudioSource src, Action<AudioSource> release)
         {
             _src = src;
@@ -21,6 +22,7 @@ namespace Framework.Utilities.AudioManager
         {
             if (_src == null) return;
             _src.Stop();
+            OnFinished?.Invoke(this);
             _release?.Invoke(_src);
             _src = null;
             _release = null;
@@ -29,12 +31,15 @@ namespace Framework.Utilities.AudioManager
         // Internal: used by manager to return when finished
         internal void ReturnIfFinished()
         {
+            _src.Stop();    // 再次关闭
             if (_src == null) return;
             if (!_src.isPlaying)
             {
+                OnFinished?.Invoke(this);
                 _release?.Invoke(_src);
                 _src = null;
                 _release = null;
+                OnFinished = null;
             }
         }
     }
