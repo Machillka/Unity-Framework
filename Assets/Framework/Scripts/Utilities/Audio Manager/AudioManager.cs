@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Codice.CM.SEIDInfo;
 using UnityEngine;
@@ -39,7 +40,7 @@ namespace Framework.Utilities.AudioManager
                 // 得到的时候只是激活，具体播放逻辑留给 Play 方法
                 actionOnGet: s => { s.gameObject.SetActive(true); s.Stop(); s.clip = null; },
                 actionOnRelease: s => { s.Stop(); s.clip = null; s.gameObject.SetActive(false); },
-                actionOnDestroy: s => { if (s != null) Object.Destroy(s.gameObject); },
+                actionOnDestroy: s => { if (s != null) Destroy(s.gameObject); },
                 collectionCheck: false,
                 defaultCapacity: defaultPoolSize,
                 maxSize: maxPoolSize
@@ -173,6 +174,16 @@ namespace Framework.Utilities.AudioManager
             return handle;
         }
 
+        public AudioHandle PlaySFX(string clipName, Action<AudioHandle> onfinished, Vector3? pos = null, float? volume = null, float? pitch = null)
+        {
+            var handle = PlaySFX(clipName, onfinished, pos, volume, pitch);
+            if (handle != null)
+            {
+                handle.OnFinished += onfinished;
+            }
+            return handle;
+        }
+
         private void ReleaseSource(AudioSource src)
         {
             if (_sourcePool != null && _sourcePool.CountInactive < maxPoolSize)
@@ -245,7 +256,7 @@ namespace Framework.Utilities.AudioManager
             {
                 yield return null;
             }
-            handle.Stop();
+            handle.ReturnIfFinished();
         }
     }
 }

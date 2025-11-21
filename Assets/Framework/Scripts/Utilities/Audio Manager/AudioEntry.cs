@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,6 +8,7 @@ namespace Framework.Utilities.AudioManager
     public class AudioCatalogSO : ScriptableObject
     {
         public List<SoundEntry> entries = new();
+        [NonSerialized]
         public Dictionary<string, SoundEntry> entriesDict = new();
 
         // NOTE: 在编辑器中保持同步，以及统计数量一样不代表内容一致

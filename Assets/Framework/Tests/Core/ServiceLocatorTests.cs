@@ -1,7 +1,7 @@
 using Framework.Core.Service;
 using NUnit.Framework;
 
-namespace Tests
+namespace Tests.Core.ServiceLocatorTests
 {
     public class ServiceLocatorTests
     {

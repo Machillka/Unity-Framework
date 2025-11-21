@@ -3,7 +3,7 @@ using NUnit.Framework;
 using Framework.Core.Service;
 using Framework.Utilities.ObjectPool;
 
-namespace Tests
+namespace Tests.Utilities.PoolManagerTest
 {
     public class PoolManagerTests
     {
